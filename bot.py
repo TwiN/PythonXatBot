@@ -16,7 +16,7 @@ A basic xat bot that does not require the (BOT) power.
 
 @author    Twin
 @date      2016/07/15
-@website   twinnation.org
+@website   https://twinnation.org
 --------------------------------------------------'''
 
 ###########################
