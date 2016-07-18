@@ -88,7 +88,7 @@ def getChatData(cname):
            'Connection': 'keep-alive'}
     req = urllib2.Request(site, headers=hdr)
     try:
-        page = urllib2.urlopen(req)
+        page = urllib2.urlopen(req, timeout=5)
     except urllib2.HTTPError, e:
         print e.fp.read()
     content=(page.read()).split(':')
@@ -114,7 +114,7 @@ def file_get_contents(url):
            'Connection': 'keep-alive'}
     req = urllib2.Request(site, headers=hdr)
     try:
-        page = urllib2.urlopen(req)
+        page = urllib2.urlopen(req, timeout=5)
         return page.read()
     except urllib2.HTTPError, e:
         print e.fp.read()
@@ -237,16 +237,16 @@ def connect():
             if count>2 and not c_retry:
                 c_retry = True
                 gSocket.close()
-                print "Attempting to reconnect in 5 seconds..."
+                print "[STATUS] Attempting to reconnect in 5 seconds..."
                 sleep(5)
                 connect()
             elif count>2 and c_retry:
-                print "Exiting..."
+                print "[CRITICAL] Exiting..."
                 break
         else:
             if c_retry: i_rounds+=1
             if c_retry and not data.find("<logout")>0 and i_rounds>5:
-                print "Reconnection was successful, setting c_retry back to False."
+                print "[INFO] Reconnection was successful, setting c_retry back to False."
                 c_retry = False
             handlepacket(data) # everything went well, so handle the packets!
     gSocket.close()
@@ -267,7 +267,7 @@ def handlepacket(data):
             if packet.find('<u ')>0: 
                 userInfo(packet)
             if packet.find('<i')>0:
-                print 'got bg'
+                print '[INFO] Got background.'
                 chatInfo(packet)
             if packet.find('<l')>0 and uid != botID:
                 userListInfo = removeFromDictionary(userListInfo, uid) 
@@ -305,7 +305,8 @@ def handlepacket(data):
         print 'Tickled by '+uid
     
     # Chat information
-    elif data.startswith('<i')>0: 
+    elif data.startswith('<i')>0:
+        print '[INFO] Got background.'
         chatInfo(data)
         
     # Others
