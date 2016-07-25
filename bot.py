@@ -65,7 +65,6 @@ owner = "888103269" # your ID goes here (NOT THE BOT ID)
 ########
 
 greetings = ["Hey", "Hi", "Hello", "Welcome", "Yo"]
-farewells = ["Bye", "Cya", "Goodbye", "Take care", "Go away"]
 
 colors = ["red", "blue", "green", "yellow","orange",
          "purple", "white", "black", "pink", "gray"]
