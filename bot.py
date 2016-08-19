@@ -682,13 +682,15 @@ def handle(packet, chatType, s):
         elif cmd == "fml":
             reply(uid, fml(), chatType, s)
 
+         '''
         # urbansearch <query>
         elif cmd == "urbansearch" or cmd == "urban":
             try:
                 reply(uid, urbansearch(argu), chatType, s)
             except IndexError:
                 reply(uid, "Usage is @urban TERM", chatType, s)
-            
+         '''
+         
         # usercount
         elif cmd == "usercount":
             reply(uid, "There are currently "+str(len(userListInfo)+1)+" users online.", chatType, s)
