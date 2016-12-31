@@ -695,7 +695,9 @@ def handle(packet, chatType, s):
         elif cmd == "usercount":
             reply(uid, "There are currently "+str(len(userListInfo)+1)+" users online.", chatType, s)
 
-
+        # let me google that for you
+        elif cmd == "g" or cmd == "google" or cmd == "lmgtfy":
+            reply(uid, "http://lmgtfy.com/?q="+(argu.replace(' ', '+')), chatType, s)
 
 ########################################
 ################# Main #################
