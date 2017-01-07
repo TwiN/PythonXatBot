@@ -26,8 +26,10 @@ A basic xat bot that does not require the (BOT) power.
 ############
 # Settings #
 ############
-isRegistered = False # if the bot is registered. This slows down the boot up
+isRegistered = False # FIXME: Xat changed some packets, this is broken for now
+# You can still connect using a non-registered bot, however
 autoMember = False # TODO: fix calculateRank()
+
 #################
 # Do not modify #
 #################
@@ -58,7 +60,7 @@ botDisplayName = "TwiNNatioNBoT"
 botAvatar      = "http://oi48.tinypic.com/9uqgex.jpg"
 botHomepage    = "https://twinnation.org"
 
-owner = "888103269" # your ID goes here (NOT THE BOT ID)
+owner = "888103269" # Bot owner ID goes here (NOT THE BOT ID)
 
 ########
 # MISC #
@@ -132,6 +134,7 @@ def getBetween(s, first, last):
         return ''
     return ''
 
+
 '''
 Function that checks if a sentence contains an element in a list.
 NOTE: This function should be used as the last statement.
@@ -161,6 +164,7 @@ def removeFromDictionary(d, key):
         if DEBUG: print "Key '"+str(key)+"' was not found, thus it cannot be deleted."
     return temp
 
+
 '''
 Function that reads a local file
 @param fname    path and filename
@@ -170,7 +174,7 @@ def readLocalFile(fname):
     with open(fname, 'r') as f:
         content += f.read()
     return content.rstrip("\n") #removes last newline
-    
+
 
 '''
 Function that OVERWRITES data in a file
@@ -182,11 +186,13 @@ def writeInFile(fname, data):
     fhandler.write(data)
     fhandler.close()
 
+
 '''
 Function that returns true on lucky occasions
 '''
 def chance(percentage):
     return random.randint(0, 100) < percentage
+
 
 ##############
 # connection #
@@ -205,26 +211,23 @@ def login():
     print 'Connection successful!'
     s.close()
 
+
 '''
 Function that connects the bot to xat's server.
 '''
 def connect():
     global gSocket, userListInfo, c_retry
     gSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
     gSocket.connect((chatip, chatport))
     gSocket.sendall('<y r="'+str(chatid)+'" m="1" v="0" u="'+str(botID)+'" />\x00')
     data = gSocket.recv(2048)
-    
     pkt_i  = getBetween(data, 'i="', '"')
     pkt_l5 = str(getL5(pkt_i, getBetween(data, 'p="', '"')))
-
     sleep(1)
     if isRegistered: # if its a registered user
         gSocket.sendall('<j2 cb="89" l5="'+pkt_l5+'" y="'+pkt_i+'" k="'+botK1+'" k3="" p="0" c="'+str(chatid)+'" f="0" u="'+str(botID)+'" d0="1088" d3="5730386" dt="1467237491" N="'+botRegName+'" n="'+botDisplayName+'" a="'+botAvatar+'" h="'+botHomepage+'" v="0" />\x00')
     else: # if not a registered user
         gSocket.sendall('<j2 cb="0" l5="'+pkt_l5+'" y="'+pkt_i+'" k="'+botK1+'" p="0" c="'+str(chatid)+'" f="0" u="'+str(botID)+'" d0="0" n="'+botDisplayName+'" a="'+botAvatar+'" h="'+botHomepage+'" v="10" />\x00')
-    
     count=0
     i_rounds=0
     while True: # keeps the socket alive
@@ -251,6 +254,7 @@ def connect():
     gSocket.close()
     exit()
 
+
 '''
 Function that handles the packets (events)
 @param data     packet
@@ -270,7 +274,6 @@ def handlepacket(data):
                 chatInfo(packet)
             if packet.find('<l')>0 and uid != botID:
                 userListInfo = removeFromDictionary(userListInfo, uid) 
-
     # store users in db regardless of events (hence no elif)
     if data.startswith('<u '):
         if autoMember:
@@ -278,7 +281,6 @@ def handlepacket(data):
             if calculateRank(getBetween(data, 'f="', '"')) == 'guest':
                 mkMember(uid, gSocket)
         userInfo(data)
-        
     # User leaving the chat
     elif data.startswith('<l')>0 and uid != botID:
         userListInfo = removeFromDictionary(userListInfo, uid)
@@ -311,6 +313,7 @@ def handlepacket(data):
     # Others
     else:
         print "[<<] "+data
+
 
 '''
 Function that generates the L5.
@@ -375,6 +378,7 @@ def reply(uid, msg, chatType, s=gSocket):
         sleep(4.5)
         reply(uid, sMsg[170:], chatType, s)
 
+
 '''
 Function that sends a message on the main chat
 '''        
@@ -383,34 +387,40 @@ def sM(msg, s=gSocket):
 
 def sendMessage(msg, s=gSocket):
     s.sendall('<m t="'+msg+'" u="'+str(botID)+'" />\x00')
+
+
 '''
 Function that sends a private message to a given uid
 '''     
 def sPM(uid, msg, s=gSocket): 
     sendPrivateMessage(uid, msg, s)
-    
+
 def sendPrivateMessage(uid, msg, s=gSocket):
     # only work if in same room:
     #s.sendall('<p u="'+str(uid)+'" t="'+msg+'" />\x00')
     # works everywhere:
     s.sendall('<z d="'+str(uid)+'" u="'+str(botID)+'" t="'+msg+'" />\x00')
+
+
 '''
 Function that sends a private chat to a given uid
 '''   
 def sPC(uid, msg, s=gSocket): 
     sendPrivateChat(uid, msg, s)
- 
+
 def sendPrivateChat(uid, msg, s=gSocket):
     # only work if in same room:
     #s.sendall('<p u="'+str(uid)+'" t="'+msg+'" s="2" d="'+str(botID)+'" />\x00')
     # works everywhere:
     s.sendall('<z d="'+str(uid)+'" u="'+str(botID)+'" t="'+msg+'" s="2" />\x00')
 
+
 '''
 Function that members a given uid
 '''   
 def mkMember(uid, s=gSocket):
     s.sendall('<c u="'+str(uid)+'" t="/e" />\x00')
+
 
 '''
 Function that changes the chat the bot is currently in.
@@ -426,6 +436,7 @@ def changeChat(cname, s=gSocket):
     s.sendall('<q qt="Q12" r="'+chatid+'" />\x00')
     s.close()
     connect()
+
 
 '''
 Function that determines the rank of the user. It might be
@@ -444,6 +455,7 @@ def calculateRank(uf):
     except ValueError:
         return 'guest'
     return '???'
+
 
 '''
 Function that saves the user info stored in the u packet in a
@@ -475,6 +487,7 @@ def userInfo(data):
     global userListInfo
     userListInfo[str(uid)]=uname+' : '+udisplayname+' : '+uavatar+' : '+uhomepage+' : '+str(urank)
 
+
 '''
 Function that returns the data found on the id passed as parameter
 @param uid      user id
@@ -494,10 +507,12 @@ Function that returns the rank of the uid passed as param
 '''
 def getUserRank(uid):
     return userListInfo[str(uid)].split(' : ')[3]
+
     
 def chatInfo(data):
     global chatBackground
     chatBackground=getBetween(data, 'b="', ';=')
+
 
 def getChatBackground():
     return chatBackground
