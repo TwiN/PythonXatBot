@@ -704,7 +704,10 @@ def handle(packet, chatType, s):
         # let me google that for you
         elif cmd == "g" or cmd == "google" or cmd == "lmgtfy":
             reply(uid, "http://lmgtfy.com/?q="+(argu.replace(' ', '+')), chatType, s)
-
+        
+        # roll the dice
+        elif cmd == "rtd" or cmd == "dice" or cmd == "roll":
+            reply(uid, str(random.randint(1,6)), chatType, s)
 
 
 
