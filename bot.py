@@ -56,11 +56,11 @@ botID = "1517381276"
 botK1 = "280ee724245772b81c00"  
 botK2 = "537616878"            
 
-botDisplayName = "TwiNNatioNBoT"
-botAvatar      = "http://oi48.tinypic.com/9uqgex.jpg"
-botHomepage    = "https://twinnation.org"
+botDisplayName = "Kiin"
+botAvatar      = "https://i.imgur.com/YiYn1C7.png"
+botHomepage    = "xat.com/doacao"
 
-owner = "888103269" # Bot owner ID goes here (NOT THE BOT ID)
+owner = "1523822521" # Bot owner ID goes here (NOT THE BOT ID)
 
 ########
 # MISC #
