@@ -1,3 +1,10 @@
+## Update (2018-07-22)
+
+This project is no longer actively maintained.
+
+-------------------------
+
+
 # PythonXatBot
 A xat bot in Python that does not require the (bot) power.
 
