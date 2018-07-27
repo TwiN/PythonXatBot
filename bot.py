@@ -52,9 +52,9 @@ userListInfo = {}
 botRegName="bot_username" # I recommend using an unregistered 
 botPasswrd="bot_password" # bot because laziness > all
 
-botID = "1517381276"            
-botK1 = "280ee724245772b81c00"  
-botK2 = "537616878"            
+botID = "1533405926"    
+botK1 = "1068a90e965b56313a00"  
+botK2 = "1640447824"
 
 botDisplayName = "TwiNNatioNBoT"
 botAvatar      = "http://oi48.tinypic.com/9uqgex.jpg"
@@ -79,27 +79,30 @@ colors = ["red", "blue", "green", "yellow","orange",
 Function that gets the chat data (id, ip and port)
 @param cname    chat name
 '''
-def getChatData(cname):
-    site= "https://twinnation.org/api/xat?chat=%s" % cname
+def getChatData(cnames):
+    site= "https://twinnation.org/api/xat?chat=%s" 
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
            'Accept-Encoding': 'none',
            'Accept-Language': 'en-US,en;q=0.8',
            'Connection': 'keep-alive'}
-    req = urllib2.Request(site, headers=hdr)
-    try:
-        page = urllib2.urlopen(req, timeout=5)
-    except urllib2.HTTPError, e:
-        print e.fp.read()
-    content=(page.read()).split(':')
-    cdata = {
-        'chatname': content[0],
-        'chatid': content[1],
-        'chatip': content[2],
-        'chatport': int(content[3])
-    }
-    return cdata
+    cdatas = {}
+    for cname in cnames:
+        req = urllib2.Request(site %cname, headers=hdr)
+        try:
+            page = urllib2.urlopen(req, timeout=5)
+        except urllib2.HTTPError, e:
+            print e.fp.read()
+        content=(page.read()).split(':')
+        cdata = {
+            'chatname': content[0],
+            'chatid': content[1],
+            'chatip': content[2],
+            'chatport': int(content[3])
+        }
+        cdatas[cname]  = cdata
+    return cdatas
 
 '''
 Function that returns the source from the target url
@@ -170,10 +173,11 @@ Function that reads a local file
 @param fname    path and filename
 '''
 def readLocalFile(fname):
-    content=''
+    content=[]
     with open(fname, 'r') as f:
-        content += f.read()
-    return content.rstrip("\n") #removes last newline
+        lines = f.readlines()
+        content = [x.strip() for x in lines]
+    return content
 
 
 '''
@@ -215,42 +219,55 @@ def login():
 '''
 Function that connects the bot to xat's server.
 '''
-def connect():
-    global gSocket, userListInfo, c_retry
-    gSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    gSocket.connect((chatip, chatport))
-    gSocket.sendall('<y r="'+str(chatid)+'" m="1" v="0" u="'+str(botID)+'" />\x00')
-    data = gSocket.recv(2048)
-    pkt_i  = getBetween(data, 'i="', '"')
-    pkt_l5 = str(getL5(pkt_i, getBetween(data, 'p="', '"')))
-    sleep(1)
-    if isRegistered: # if its a registered user
-        gSocket.sendall('<j2 cb="89" l5="'+pkt_l5+'" y="'+pkt_i+'" k="'+botK1+'" k3="" p="0" c="'+str(chatid)+'" f="0" u="'+str(botID)+'" d0="1088" d3="5730386" dt="1467237491" N="'+botRegName+'" n="'+botDisplayName+'" a="'+botAvatar+'" h="'+botHomepage+'" v="0" />\x00')
-    else: # if not a registered user
-        gSocket.sendall('<j2 cb="0" l5="'+pkt_l5+'" y="'+pkt_i+'" k="'+botK1+'" p="0" c="'+str(chatid)+'" f="0" u="'+str(botID)+'" d0="0" n="'+botDisplayName+'" a="'+botAvatar+'" h="'+botHomepage+'" v="10" />\x00')
-    count=0
-    i_rounds=0
-    while True: # keeps the socket alive
+def connect(chatDatas):
+    global userListInfo, c_retry,socketList
+    #gSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    chatip = chatDatas[chatDatas.keys()[0]]['chatip']
+    chatport = chatDatas[chatDatas.keys()[0]]['chatport']
+    #gSocket.connect((chatip, chatport))
+    socketList = {}
+    # need a socket connection for every xat, otherwise we got disconnected
+    for chatData in chatDatas:
+        gSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        socketList[chatData] = gSocket 
+    for chatData in chatDatas:
+        gSocket = socketList[chatData]
+        gSocket.connect((chatip, chatport))
+        chatid = chatDatas[chatData]['chatid']
+        gSocket.sendall('<y r="'+str(chatid)+'" m="1" v="0" u="'+str(botID)+'" />\x00')
         data = gSocket.recv(2048)
-        if data=="":
-            count+=1
-            print "[ERROR] Failed to connect!"
-            sleep(.3)
-            if count>2 and not c_retry:
-                c_retry = True
-                gSocket.close()
-                print "[STATUS] Attempting to reconnect in 5 seconds..."
-                sleep(5)
-                connect()
-            elif count>2 and c_retry:
-                print "[CRITICAL] Exiting..."
-                break
-        else:
-            if c_retry: i_rounds+=1
-            if c_retry and not data.find("<logout")>0 and i_rounds>5:
-                print "[INFO] Reconnection was successful, setting c_retry back to False."
-                c_retry = False
-            handlepacket(data) # everything went well, so handle the packets!
+        pkt_i  = getBetween(data, 'i="', '"')
+        pkt_l5 = str(getL5(pkt_i, getBetween(data, 'p="', '"')))
+        sleep(1)
+        if isRegistered: # if its a registered user
+            gSocket.sendall('<j2 cb="89" l5="'+pkt_l5+'" y="'+pkt_i+'" k="'+botK1+'" k3="" p="0" c="'+str(chatid)+'" f="0" u="'+str(botID)+'" d0="1088" d3="5730386" dt="1467237491" N="'+botRegName+'" n="'+botDisplayName+'" a="'+botAvatar+'" h="'+botHomepage+'" v="0" />\x00')
+        else: # if not a registered user
+            gSocket.sendall('<j2 cb="0" l5="'+pkt_l5+'" y="'+pkt_i+'" k="'+botK1+'" p="0" c="'+str(chatid)+'" f="0" u="'+str(botID)+'" d0="0" n="'+botDisplayName+'" a="'+botAvatar+'" h="'+botHomepage+'" v="10" />\x00')
+        count=0
+        i_rounds=0
+    while True: # keeps the socket alive
+        for chatData in socketList:
+            gSocket = socketList[chatData]
+            data = gSocket.recv(2048)
+            if data=="":
+                count+=1
+                print "[ERROR] Failed to connect!"
+                sleep(.3)
+                if count>2 and not c_retry:
+                    c_retry = True
+                    gSocket.close()
+                    print "[STATUS] Attempting to reconnect in 5 seconds..."
+                    sleep(5)
+                    connect()
+                elif count>2 and c_retry:
+                    print "[CRITICAL] Exiting..."
+                    break
+            else:
+                if c_retry: i_rounds+=1
+                if c_retry and not data.find("<logout")>0 and i_rounds>5:
+                    print "[INFO] Reconnection was successful, setting c_retry back to False."
+                    c_retry = False
+                handlepacket(data,gSocket) # everything went well, so handle the packets!
     gSocket.close()
     exit()
 
@@ -259,7 +276,8 @@ def connect():
 Function that handles the packets (events)
 @param data     packet
 '''
-def handlepacket(data):
+def handlepacket(data,sock):
+    gSocket = sock
     global userListInfo
     uid = getBetween(data, 'u="', '"').split('_')[0] # user id
     
@@ -428,7 +446,7 @@ Function that changes the chat the bot is currently in.
 def changeChat(cname, s=gSocket):
     global chatName, chatid, chatport, chatip, chatData
     chatName = cname
-    writeInFile("chatName.txt", cname)
+    writeInFile("chatNames.txt", cname)
     chatData = getChatData(chatName)
     chatid   = chatData['chatid']
     chatport = chatData['chatport']
@@ -729,21 +747,25 @@ def handle(packet, chatType, s):
 ################# Main #################
 ########################################
 def init():
-    global chatName, chatData, chatid, chatport, chatip
-    chatName = readLocalFile('chatName.txt')
-    chatData = getChatData(chatName)
-    chatid   = chatData['chatid']
-    chatport = chatData['chatport']
-    chatip   = chatData['chatip']
-    print "----- Chat info -----"
-    print "chatName: %s" % chatName
-    print "ID:       %s" % chatid
-    print "Port:     %s" % chatport
-    print "IP:       %s" % chatip
-    print "---------------------"
-    if isRegistered:
-        login()
-    connect()
+    global chatName, chatDatas, chatid, chatport, chatip
+    chatNames = readLocalFile('chatNames.txt')
+    chatDatas = getChatData(chatNames)
+    #chatid   = chatData['chatid']
+    #chatport = chatData['chatport']
+    #chatip   = chatData['chatip']
+    for chatName in chatNames:
+        chatid = chatDatas[chatName]['chatid']
+        chatport = chatDatas[chatName]['chatport']
+        chatip  =  chatDatas[chatName]['chatip']
+        print "----- Chat info -----"
+        print "chatName: %s" % chatName
+        print "ID:       %s" % chatport 
+        print "IP:       %s" % chatip
+        print "---------------------"
+    for chatName in chatNames:
+        if isRegistered:
+            login()
+        connect(chatDatas)
 
 ########################################
 # this should always be at the bottom! #
