@@ -6,7 +6,8 @@ This project is now maintained by me :)
 This project is no longer actively maintained.
 
 -------------------------
-
+## Changelog
+**2018-07-27**: This bot now supports multiple xats at the same time
 
 # PythonXatBot
 A xat bot in Python that does not require the (bot) power.
