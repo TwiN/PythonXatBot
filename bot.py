@@ -164,7 +164,8 @@ def removeFromDictionary(d, key):
     try:
         del temp[key]
     except KeyError:
-        if DEBUG: print "Key '"+str(key)+"' was not found, thus it cannot be deleted."
+        #if DEBUG: print "Key '"+str(key)+"' was not found, thus it cannot be deleted."
+        pass
     return temp
 
 
