@@ -1,3 +1,6 @@
+## Update (2018-07-27)
+This project is now maintained by me :)
+
 ## Update (2018-07-22)
 
 This project is no longer actively maintained.
