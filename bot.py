@@ -259,9 +259,21 @@ def connect(chatDatas):
                 sleep(.3)
                 if count>2 and not c_retry:
                     c_retry = True
-                    gSocket.close()
+                    #gSocket.close()
                     print "[STATUS] Attempting to reconnect in 5 seconds..."
                     sleep(5)
+                    gSocket.close()
+                    oldgSocket = gSocket
+                    gSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    for k in chatDatas:
+                        if socketList[k] == oldgSocket:
+                            socketList[k] = gSocket
+                    gSocket.connect((chatip, chatport))
+                    gSocket.sendall('<y r="'+str(chatid)+'" m="1" v="0" u="'+str(botID)+'" />\x00')
+                    data = gSocket.recv(2048)
+                    pkt_i  = getBetween(data, 'i="', '"')
+                    pkt_l5 = str(getL5(pkt_i, getBetween(data, 'p="', '"')))
+                    sleep(1)
                     gSocket.sendall('<j2 cb="0" l5="'+pkt_l5+'" y="'+pkt_i+'" k="'+botK1+'" p="0" c="'+str(chatid)+'" f="0" u="'+str(botID)+'" d0="0" n="'+botDisplayName+'" a="'+botAvatar+'" h="'+botHomepage+'" v="10" />\x00')
                     sleep(0.5)
                     gSocket.sendall('<w0 />\x00') # join the main room (for xats with many rooms)
