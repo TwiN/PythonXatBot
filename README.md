@@ -1,7 +1,7 @@
-##requirements
+## requirements
 python 2
 
-##how to use
+## how to use
 1. open the file bot.py and edit these variables: botID, botK1, botK2 to your bot settings (you can generate these parameters on [https://xat.com/web_gear/chat/auser3.php](https://xat.com/web_gear/chat/auser3.php)
 
 2.(optional) edit the botDisplayName, botAvatar and botHomepage
