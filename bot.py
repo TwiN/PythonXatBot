@@ -57,7 +57,7 @@ botID = "1533405926"
 botK1 = "1068a90e965b56313a00"  
 botK2 = "1640447824"
 
-botDisplayName = "FelipeBoT"
+botDisplayName = "testBoT"
 botAvatar      = "http://oi48.tinypic.com/9uqgex.jpg"
 botHomepage    = "https://twinnation.org"
 
