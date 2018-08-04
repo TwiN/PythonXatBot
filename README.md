@@ -1,9 +1,23 @@
+## requirements
+python 2
+
+## how to use
+1. open the file bot.py and edit these variables: botID, botK1, botK2 to your bot settings (you can generate these parameters on [https://xat.com/web_gear/chat/auser3.php](https://xat.com/web_gear/chat/auser3.php)
+
+2.(optional) edit the botDisplayName, botAvatar and botHomepage
+
+3. open the file ```chatNames.txt``` and edit the name of the xats you want your bot to join ( one per line)
+
+## Update (2018-07-27)
+This project is now maintained by me :)
+
 ## Update (2018-07-22)
 
 This project is no longer actively maintained.
 
 -------------------------
-
+## Changelog
+**2018-07-27**: This bot now supports multiple xats at the same time
 
 # PythonXatBot
 A xat bot in Python that does not require the (bot) power.
