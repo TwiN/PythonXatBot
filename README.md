@@ -13,6 +13,10 @@ python 2.7
 
 3. open the file ```chatNames.txt``` and edit the name of the xats you want your bot to join ( one per line)
 
+## Update (2018-11-03)
+
+The Xat API on my website is now deprecated.
+
 
 ## Update (2018-10-07)
 
@@ -22,11 +26,15 @@ I will deprecate the API for getting Xat chat's info _very_ soon. I have long si
 Here's a quick Java implementation, if somebody wants to make their own API:
 
 ```java
+@Service
+@Deprecated
+public class XatApiService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(XatApiService.class);
+	
 	private List<Integer> chatPorts = List.of(10007, 10008, 10019, 10038);
-	private List<String> chatIps = List.of(
-		"fwdelb00-1964376362.us-east-1.elb.amazonaws.com", "fwdelb01-1365137239.us-east-1.elb.amazonaws.com",
-		"fwdelb02-53956973.us-east-1.elb.amazonaws.com", "fwdelb03-1789285345.us-east-1.elb.amazonaws.com"
-	);
+	/** You can find those at https://xat.com/web_gear/chat/ip2.htm */
+	private List<String> chatIps = List.of("fwdelb-166679406.us-east-1.elb.amazonaws.com", "fwdelb2-1789343474.us-east-1.elb.amazonaws.com");
 	
 	
 	public String generateXatData(String chatName) throws IOException {
@@ -57,9 +65,11 @@ Here's a quick Java implementation, if somebody wants to make their own API:
 				}
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Failed to fetch chat id");
+			logger.error("[getXatChatId] Failed to fetch chat id", e);
 		}
 		return chatId;
+	}
+	
 }
 ```
 
