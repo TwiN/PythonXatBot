@@ -15,7 +15,7 @@ python 2.7
 
 ## Update (2018-11-03)
 
-The Xat API on my website is now deprecated.
+The Xat API on my website is now deprecated and will be removed in the next few days.
 
 
 ## Update (2018-10-07)
