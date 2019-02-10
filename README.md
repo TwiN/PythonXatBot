@@ -73,11 +73,17 @@ public class XatApiService {
 }
 ```
 
+## Update (2018-07-22)
+
+This project is no longer actively maintained.
+
+
 ## Update (2018-07-27)
 
 This project is now maintained by [x00x90](https://github.com/x00x90)
 
-## Update (2018-07-22)
+
+## Update (2019-02-09)
 
 This project is no longer actively maintained.
 
