@@ -13,6 +13,10 @@ python 2.7
 
 3. open the file ```chatNames.txt``` and edit the name of the xats you want your bot to join ( one per line)
 
+## Update (2019-02-09)
+
+This project is no longer actively maintained.
+
 ## Update (2018-11-03)
 
 The Xat API on my website is now deprecated and will be removed in the next few days.
@@ -73,17 +77,11 @@ public class XatApiService {
 }
 ```
 
-## Update (2018-07-22)
-
-This project is no longer actively maintained.
-
-
 ## Update (2018-07-27)
 
 This project is now maintained by [x00x90](https://github.com/x00x90)
 
-
-## Update (2019-02-09)
+## Update (2018-07-22)
 
 This project is no longer actively maintained.
 
